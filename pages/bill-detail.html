@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账单详情</title>
+    <style id="theme-vars">
+/* Project: payment-receipt-flow
+   Single brand hue: payment blue. Neutral surfaces carry most of the page. */
+
+:root {
+  /* Brand primary scale (single hue) */
+  --pay-primary-50: #eef4ff;
+  --pay-primary-100: #dbe7ff;
+  --pay-primary-200: #b9d1ff;
+  --pay-primary-300: #8fb4ff;
+  --pay-primary-400: #5f8ffb;
+  --pay-primary-500: #2f6bff;
+  --pay-primary-600: #1e57e6;
+  --pay-primary-700: #1845b8;
+  --pay-primary-800: #14398f;
+  --pay-primary-900: #102c6b;
+
+  /* Neutral scale */
+  --pay-neutral-0: #ffffff;
+  --pay-neutral-25: #fbfcfe;
+  --pay-neutral-50: #f6f7fb;
+  --pay-neutral-100: #f2f3f7;
+  --pay-neutral-200: #e8eaf0;
+  --pay-neutral-300: #d9dce4;
+  --pay-neutral-400: #b3b8c4;
+  --pay-neutral-500: #8a8f9b;
+  --pay-neutral-600: #6b7280;
+  --pay-neutral-700: #4b5563;
+  --pay-neutral-800: #2c313a;
+  --pay-neutral-900: #16181d;
+
+  /* Semantic aliases (required by head contract) */
+  --pay-background: #f6f7fb;
+  --pay-foreground: #16181d;
+  --pay-card: #ffffff;
+  --pay-card-foreground: #16181d;
+  --pay-popover: #ffffff;
+  --pay-popover-foreground: #16181d;
+  --pay-primary: #2f6bff;
+  --pay-primary-foreground: #ffffff;
+  --pay-muted: #f2f3f7;
+  --pay-muted-foreground: #8a8f9b;
+  --pay-border: #edeff3;
+  --pay-input: #edeff3;
+  --pay-ring: #2f6bff;
+
+  /* Radius scale */
+  --pay-radius-small: 4px;
+  --pay-radius-medium: 8px;
+  --pay-radius-large: 12px;
+  --pay-radius-pill: 999px;
+
+  /* Static surface depth: border/surface led, shadow alpha <= 0.05 */
+  --pay-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --pay-shadow-float: 0 8px 24px -8px rgba(15, 23, 42, 0.18);
+
+  /* Page 1 action gradient (reference-derived blue to violet) */
+  --pay-cta-gradient: linear-gradient(96deg, #4a6cf7 0%, #6a55ee 52%, #8a4be8 100%);
+
+  /* Page 2 result screen blue gradient (single-hue blue) */
+  --pay-result-top: #0f63ef;
+  --pay-result-mid: #4c97f6;
+  --pay-result-soft: #cfe5ff;
+  --pay-result-bottom: #eef6ff;
+  --pay-result-glow: radial-gradient(120% 60% at 50% 0%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 60%);
+
+  /* Price / discount emphasis, used only on bill detail */
+  --pay-discount: #e05567;
+  --pay-link: #2f6bff;
+
+  /* Page 1 reference details */
+  --pay-icon-tile-bg: #fbf3dc;
+  --pay-icon-gold: #c29b2e;
+  --pay-chip-bg: #f2f3f7;
+  --pay-chip-text: #5a5f68;
+
+  /* Page 2 result screen details */
+  --pay-result-gradient: linear-gradient(180deg, #0f63ef 0%, #2c7bf4 34%, #7fb6fa 58%, #d8ebff 78%, #f6faff 100%);
+  --pay-result-border: #bbd7ff;
+  --pay-result-button-bg: #ffffff;
+  --pay-result-button-text: #2f6bff;
+  --pay-on-primary-soft: rgba(255, 255, 255, 0.9);
+  --pay-on-primary-muted: rgba(255, 255, 255, 0.72);
+  --pay-result-line: rgba(255, 255, 255, 0.2);
+
+  /* Page 3 bill detail details */
+  --pay-bill-bg: #f2f4f8;
+  --pay-surface-alt: #fbfcfe;
+  --pay-chip-blue-bg: #e8f4ff;
+  --pay-chip-blue-text: #2f6bff;
+  --pay-recommend-bg: #f6f7fa;
+  --pay-white: #ffffff;
+
+  /* Type system */
+  --pay-font-sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --pay-font-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  --pay-text-display: 56px;
+  --pay-text-h1: 26px;
+  --pay-text-h2: 22px;
+  --pay-text-h3: 17px;
+  --pay-text-body: 15px;
+  --pay-text-caption: 13px;
+}
+
+html {
+  background: var(--pay-background);
+  color: var(--pay-foreground);
+  font-family: var(--pay-font-sans);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--pay-font-sans);
+  font-size: var(--pay-text-body);
+  line-height: 1.5;
+  color: var(--pay-foreground);
+  background: var(--pay-background);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.pay-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--pay-background);
+    --color-foreground: var(--pay-foreground);
+    --color-card: var(--pay-card);
+    --color-card-foreground: var(--pay-card-foreground);
+    --color-popover: var(--pay-popover);
+    --color-popover-foreground: var(--pay-popover-foreground);
+    --color-primary: var(--pay-primary);
+    --color-primary-foreground: var(--pay-primary-foreground);
+    --color-muted: var(--pay-muted);
+    --color-muted-foreground: var(--pay-muted-foreground);
+    --color-border: var(--pay-border);
+    --color-input: var(--pay-input);
+    --color-ring: var(--pay-ring);
+    --radius-sm: var(--pay-radius-small);
+    --radius-md: var(--pay-radius-medium);
+    --radius-lg: var(--pay-radius-large);
+  }
+  @layer base {
+    body { background: var(--pay-background); color: var(--pay-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--pay-background); }
+      .text-background { color: var(--pay-background); }
+      .border-background { border-color: var(--pay-background); }
+      .ring-background { --tw-ring-color: var(--pay-background); }
+      .bg-foreground { background-color: var(--pay-foreground); }
+      .text-foreground { color: var(--pay-foreground); }
+      .border-foreground { border-color: var(--pay-foreground); }
+      .ring-foreground { --tw-ring-color: var(--pay-foreground); }
+      .bg-card { background-color: var(--pay-card); }
+      .text-card { color: var(--pay-card); }
+      .border-card { border-color: var(--pay-card); }
+      .ring-card { --tw-ring-color: var(--pay-card); }
+      .bg-card-foreground { background-color: var(--pay-card-foreground); }
+      .text-card-foreground { color: var(--pay-card-foreground); }
+      .border-card-foreground { border-color: var(--pay-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--pay-card-foreground); }
+      .bg-popover { background-color: var(--pay-popover); }
+      .text-popover { color: var(--pay-popover); }
+      .border-popover { border-color: var(--pay-popover); }
+      .ring-popover { --tw-ring-color: var(--pay-popover); }
+      .bg-popover-foreground { background-color: var(--pay-popover-foreground); }
+      .text-popover-foreground { color: var(--pay-popover-foreground); }
+      .border-popover-foreground { border-color: var(--pay-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--pay-popover-foreground); }
+      .bg-primary { background-color: var(--pay-primary); }
+      .text-primary { color: var(--pay-primary); }
+      .border-primary { border-color: var(--pay-primary); }
+      .ring-primary { --tw-ring-color: var(--pay-primary); }
+      .bg-primary-foreground { background-color: var(--pay-primary-foreground); }
+      .text-primary-foreground { color: var(--pay-primary-foreground); }
+      .border-primary-foreground { border-color: var(--pay-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--pay-primary-foreground); }
+      .bg-muted { background-color: var(--pay-muted); }
+      .text-muted { color: var(--pay-muted); }
+      .border-muted { border-color: var(--pay-muted); }
+      .ring-muted { --tw-ring-color: var(--pay-muted); }
+      .bg-muted-foreground { background-color: var(--pay-muted-foreground); }
+      .text-muted-foreground { color: var(--pay-muted-foreground); }
+      .border-muted-foreground { border-color: var(--pay-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--pay-muted-foreground); }
+      .bg-border { background-color: var(--pay-border); }
+      .text-border { color: var(--pay-border); }
+      .border-border { border-color: var(--pay-border); }
+      .ring-border { --tw-ring-color: var(--pay-border); }
+      .bg-input { background-color: var(--pay-input); }
+      .text-input { color: var(--pay-input); }
+      .border-input { border-color: var(--pay-input); }
+      .ring-input { --tw-ring-color: var(--pay-input); }
+      .bg-ring { background-color: var(--pay-ring); }
+      .text-ring { color: var(--pay-ring); }
+      .border-ring { border-color: var(--pay-ring); }
+      .ring-ring { --tw-ring-color: var(--pay-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+      <style id="critical-layout">
+        .pay-bill {
+          width: 100%;
+          max-width: 480px;
+          min-height: 100vh;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          background: var(--pay-bill-bg);
+          padding-bottom: calc(12px + env(safe-area-inset-bottom));
+          box-sizing: border-box;
+          color: var(--pay-foreground);
+          font-family: var(--pay-font-sans);
+        }
+        .pay-bill *,
+        .pay-bill *::before,
+        .pay-bill *::after { box-sizing: border-box; }
+
+        .pay-icon { display: block; flex: none; width: 16px; height: 16px; }
+        .pay-icon--22 { width: 22px; height: 22px; }
+        .pay-icon--16 { width: 16px; height: 16px; }
+        .pay-icon--14 { width: 14px; height: 14px; }
+        .pay-icon--muted { color: var(--pay-neutral-400); }
+
+        .pay-bill__topbar {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          height: 52px;
+          padding: 0 16px;
+          flex: none;
+        }
+        .pay-bill__back {
+          width: 40px;
+          height: 40px;
+          margin-left: -8px;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: transparent;
+          border: 0;
+          border-radius: var(--pay-radius-medium);
+          color: var(--pay-foreground);
+          transition: background-color 140ms cubic-bezier(.2,.8,.2,1);
+        }
+        .pay-bill__back:hover { background: var(--pay-white); }
+        .pay-bill__back:active { background: var(--pay-neutral-200); }
+        .pay-bill__back:focus-visible { outline: 2px solid var(--pay-primary); outline-offset: -2px; }
+        .pay-bill__title {
+          margin: 0;
+          font-size: 20px;
+          font-weight: 600;
+          line-height: 1.2;
+          letter-spacing: -0.01em;
+          color: var(--pay-foreground);
+          text-align: left;
+          word-break: keep-all;
+        }
+
+        .pay-card {
+          background: var(--pay-white);
+          border-radius: 16px;
+          box-shadow: var(--pay-shadow-card);
+        }
+        .pay-card--summary { margin: 4px 16px 0; padding: 22px 18px 18px; }
+        .pay-card--manage { margin: 12px 16px 0; padding: 16px 18px; }
+
+        .pay-card__avatar {
+          width: 56px;
+          height: 56px;
+          margin: 0 auto;
+          border-radius: 50%;
+          overflow: hidden;
+          background: var(--pay-surface-alt);
+        }
+        .pay-card__avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+        .pay-card__name {
+          margin: 10px 0 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          font-size: 15px;
+          font-weight: 500;
+          line-height: 1.4;
+          color: var(--pay-foreground);
+        }
+        .pay-card__amount {
+          margin: 14px 0 0;
+          text-align: center;
+          font-size: 44px;
+          line-height: 1.12;
+          font-weight: 600;
+          letter-spacing: -0.02em;
+          color: var(--pay-foreground);
+          white-space: nowrap;
+          font-variant-numeric: tabular-nums;
+          font-feature-settings: "tnum" 1;
+        }
+        .pay-card__status {
+          margin: 8px 0 0;
+          text-align: center;
+          font-size: 15px;
+          font-weight: 400;
+          color: var(--pay-muted-foreground);
+        }
+
+        .pay-facts {
+          margin: 26px 0 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .pay-facts__row {
+          display: grid;
+          grid-template-columns: 100px 1fr auto;
+          align-items: start;
+          gap: 8px;
+        }
+        .pay-facts__label {
+          margin: 0;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 1.45;
+          color: var(--pay-muted-foreground);
+        }
+        .pay-facts__label--discount { color: var(--pay-discount); }
+        .pay-facts__value {
+          margin: 0;
+          min-width: 0;
+          font-size: 15px;
+          font-weight: 400;
+          line-height: 1.45;
+          color: var(--pay-foreground);
+          text-align: right;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          font-variant-numeric: tabular-nums;
+        }
+        .pay-facts__value--wrap {
+          white-space: normal;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+        .pay-facts__value--discount { color: var(--pay-discount); }
+        .pay-facts__value--chevron {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 4px;
+        }
+        .pay-facts__text { min-width: 0; }
+
+        .pay-card__more {
+          margin: 18px auto 0;
+          width: max-content;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 8px;
+          background: transparent;
+          border: 0;
+          border-radius: var(--pay-radius-medium);
+          font-size: 14px;
+          line-height: 1.4;
+          color: var(--pay-muted-foreground);
+          transition: color 140ms cubic-bezier(.2,.8,.2,1), background-color 140ms cubic-bezier(.2,.8,.2,1);
+        }
+        .pay-card__more:hover { color: var(--pay-foreground); background: var(--pay-surface-alt); }
+        .pay-card__more:focus-visible { outline: 2px solid var(--pay-primary); outline-offset: -2px; }
+        .pay-more-icon { transition: transform 160ms cubic-bezier(.2,.8,.2,1); }
+        .pay-card__more:active .pay-more-icon { transform: rotate(180deg); }
+
+        .pay-manage__head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          min-height: 40px;
+        }
+        .pay-manage__title {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 1.3;
+          color: var(--pay-foreground);
+          white-space: nowrap;
+        }
+        .pay-chip {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 10px;
+          background: var(--pay-chip-blue-bg);
+          color: var(--pay-chip-blue-text);
+          border: 0;
+          border-radius: 14px;
+          font-size: 13px;
+          line-height: 1.2;
+          white-space: nowrap;
+          transition: background-color 140ms cubic-bezier(.2,.8,.2,1);
+        }
+        .pay-chip:hover { background: var(--pay-primary-100); }
+        .pay-chip:focus-visible { outline: 2px solid var(--pay-primary); outline-offset: 2px; }
+
+        .pay-manage__row {
+          min-height: 52px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          font-size: 15px;
+        }
+        .pay-manage__row--divided { border-top: 1px solid var(--pay-border); }
+        .pay-manage__label { color: var(--pay-foreground); }
+        .pay-manage__value {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          color: var(--pay-foreground);
+        }
+        .pay-manage__value--empty { color: var(--pay-muted-foreground); }
+
+        .pay-recommend {
+          margin-top: 8px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: var(--pay-recommend-bg);
+          border-radius: 12px;
+          padding: 10px 12px;
+        }
+        .pay-recommend__label {
+          font-size: 13px;
+          color: var(--pay-muted-foreground);
+          white-space: nowrap;
+        }
+        .pay-recommend__pill {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 10px;
+          background: var(--pay-white);
+          color: var(--pay-foreground);
+          border: 0;
+          border-radius: var(--pay-radius-pill);
+          font-size: 13px;
+          line-height: 1.2;
+          white-space: nowrap;
+          transition: background-color 140ms cubic-bezier(.2,.8,.2,1);
+        }
+        .pay-recommend__pill:hover { background: var(--pay-surface-alt); }
+        .pay-recommend__pill:focus-visible { outline: 2px solid var(--pay-primary); outline-offset: 2px; }
+        .pay-recommend__add {
+          width: 24px;
+          height: 24px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          background: transparent;
+          border: 0;
+          border-radius: var(--pay-radius-pill);
+          color: var(--pay-primary);
+          transition: background-color 140ms cubic-bezier(.2,.8,.2,1);
+        }
+        .pay-recommend__add:hover { background: var(--pay-primary-50); }
+        .pay-recommend__add:focus-visible { outline: 2px solid var(--pay-primary); outline-offset: 2px; }
+        .pay-redpack { display: block; flex: none; width: 14px; height: 14px; }
+
+        .pay-bill__action {
+          position: sticky;
+          bottom: 0;
+          margin-top: auto;
+          padding: 12px 16px calc(10px + env(safe-area-inset-bottom));
+          background: var(--pay-bill-bg);
+        }
+        .pay-bill__cta {
+          width: 100%;
+          height: 50px;
+          border: 0;
+          border-radius: var(--pay-radius-pill);
+          background: var(--pay-primary);
+          color: var(--pay-primary-foreground);
+          font-size: 17px;
+          font-weight: 600;
+          letter-spacing: 0.01em;
+          transition: background-color 140ms cubic-bezier(.2,.8,.2,1), transform 140ms cubic-bezier(.2,.8,.2,1);
+        }
+        .pay-bill__cta:hover { background: var(--pay-primary-600); }
+        .pay-bill__cta:active { transform: translateY(1px); }
+        .pay-bill__cta:focus-visible { outline: 3px solid var(--pay-primary-300); outline-offset: 2px; }
+
+        @media (max-width: 359px) {
+          .pay-card__amount { font-size: 40px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .pay-bill *,
+          .pay-bill *::before,
+          .pay-bill *::after {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+          }
+        }
+      </style>
+
+      <div class="pay-bill">
+        <header class="pay-bill__topbar">
+          <button class="pay-bill__back" type="button" data-dom-id="back-success" aria-label="返回">
+            <svg class="pay-icon pay-icon--22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <h1 class="pay-bill__title">账单详情</h1>
+        </header>
+
+        <section class="pay-card pay-card--summary" aria-label="交易概要">
+          <div class="pay-card__avatar">
+            <img id="billAvatar" src="../assets/avatar-user.jpg" alt="收款方头像" width="56" height="56">
+          </div>
+          <p class="pay-card__name">
+            <span id="billPayee">5锅(陈*如)</span>
+            <svg class="pay-icon pay-icon--16 pay-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </p>
+          <p class="pay-card__amount" id="billAmount">-5,000.00</p>
+          <p class="pay-card__status">交易成功</p>
+
+          <dl class="pay-facts">
+            <div class="pay-facts__row">
+              <dt class="pay-facts__label">订单金额</dt>
+              <dd class="pay-facts__value" id="billOrderAmount">5000.00</dd>
+            </div>
+            <div class="pay-facts__row">
+              <dt class="pay-facts__label">创建时间</dt>
+              <dd class="pay-facts__value" id="billTime">2026-11-02 20:40:00</dd>
+            </div>
+            <div class="pay-facts__row">
+              <dt class="pay-facts__label">付款方式</dt>
+              <dd class="pay-facts__value pay-facts__value--chevron">
+                <span class="pay-facts__text" id="billMethod">支付宝</span>
+                <svg class="pay-icon pay-icon--16 pay-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+              </dd>
+            </div>
+            <div class="pay-facts__row">
+              <dt class="pay-facts__label">转账备注</dt>
+              <dd class="pay-facts__value">转账</dd>
+            </div>
+            <div class="pay-facts__row">
+              <dt class="pay-facts__label">对方账户</dt>
+              <dd class="pay-facts__value pay-facts__value--wrap" id="billAccount">5锅(陈*如) 3836227326@qq.com</dd>
+            </div>
+          </dl>
+
+          <button class="pay-card__more" type="button" aria-expanded="false">
+            <span>更多</span>
+            <svg class="pay-icon pay-icon--16 pay-icon--muted pay-more-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </section>
+
+        <section class="pay-card pay-card--manage" aria-label="账单管理">
+          <div class="pay-manage__head">
+            <h2 class="pay-manage__title">账单管理</h2>
+            <button class="pay-chip" type="button">
+              <span>我的消费图鉴</span>
+              <svg class="pay-icon pay-icon--14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.4a2 2 0 0 0 1.3 1.3L20.5 11.5l-5.4 1.8a2 2 0 0 0-1.3 1.3L12 20l-1.8-5.4a2 2 0 0 0-1.3-1.3L3.5 11.5l5.4-1.8a2 2 0 0 0 1.3-1.3z"/></svg>
+              <svg class="pay-icon pay-icon--14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          <div class="pay-manage__row pay-manage__row--divided">
+            <span class="pay-manage__label">账单分类</span>
+            <span class="pay-manage__value">
+              <span>转账红包</span>
+              <svg class="pay-icon pay-icon--16 pay-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </span>
+          </div>
+
+          <div class="pay-manage__row">
+            <span class="pay-manage__label">标签</span>
+            <span class="pay-manage__value pay-manage__value--empty">
+              <span>请选择</span>
+              <svg class="pay-icon pay-icon--16 pay-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </span>
+          </div>
+
+          <div class="pay-recommend">
+            <span class="pay-recommend__label">为您推荐</span>
+            <button class="pay-recommend__pill" type="button">
+              <svg class="pay-redpack" viewBox="0 0 16 16" aria-hidden="true">
+                <rect x="1.6" y="1.6" width="12.8" height="12.8" rx="3.2" fill="var(--pay-discount)"/>
+                <path d="M4.4 4.6h7.2l-2.4 2.6a1.8 1.8 0 0 1-2.4 0z" fill="var(--pay-white)"/>
+                <circle cx="8" cy="10.4" r="1.5" fill="var(--pay-white)"/>
+              </svg>
+              <span>转账红包</span>
+            </button>
+            <button class="pay-recommend__add" type="button" aria-label="添加标签">
+              <svg class="pay-icon pay-icon--14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <div class="pay-bill__action">
+          <button class="pay-bill__cta" type="button" data-dom-id="transfer-again">再转一笔</button>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var fallback = {
+            name: '陈*如',
+            nickname: '5锅',
+            account: '3836227326@qq.com',
+            amount: '5000.00',
+            method: '支付宝'
+          };
+          var data = fallback;
+          try {
+            var saved = JSON.parse(localStorage.getItem('payReceiptData') || 'null');
+            if (saved && typeof saved === 'object') {
+              data = {
+                name: saved.name || fallback.name,
+                nickname: saved.nickname || fallback.nickname,
+                account: saved.account || fallback.account,
+                amount: saved.amount || fallback.amount,
+                method: saved.method || fallback.method
+              };
+            }
+          } catch (err) {
+            data = fallback;
+          }
+
+          var amount = Number(String(data.amount).replace(/,/g, '')) || 0;
+          var formatted = amount.toLocaleString('zh-CN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+          var payee = data.nickname && data.name
+            ? data.nickname + '(' + data.name + ')'
+            : (data.nickname || data.name);
+
+          document.getElementById('billPayee').textContent = payee;
+          document.getElementById('billAmount').textContent = '-' + formatted;
+          document.getElementById('billOrderAmount').textContent = amount.toFixed(2);
+          document.getElementById('billMethod').textContent = data.method;
+          document.getElementById('billAccount').textContent = payee + ' ' + data.account;
+
+          var now = new Date();
+          function pad(value) {
+            return value < 10 ? '0' + value : String(value);
+          }
+          document.getElementById('billTime').textContent =
+            now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
+            ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+
+          var savedAvatar = null;
+          try {
+            savedAvatar = localStorage.getItem('payReceiptAvatar');
+          } catch (err) {}
+          if (savedAvatar) {
+            document.getElementById('billAvatar').src = savedAvatar;
+          }
+
+          var backBtn = document.querySelector('[data-dom-id="back-success"]');
+          if (backBtn) backBtn.addEventListener('click', function () {
+            window.location.href = 'transfer-success.html';
+          });
+          var againBtn = document.querySelector('[data-dom-id="transfer-again"]');
+          if (againBtn) againBtn.addEventListener('click', function () {
+            window.location.href = 'payment-info.html';
+          });
+        })();
+      </script>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

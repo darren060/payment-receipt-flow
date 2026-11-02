@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收款信息</title>
+    <style id="theme-vars">
+/* Project: payment-receipt-flow
+   Single brand hue: payment blue. Neutral surfaces carry most of the page. */
+
+:root {
+  /* Brand primary scale (single hue) */
+  --pay-primary-50: #eef4ff;
+  --pay-primary-100: #dbe7ff;
+  --pay-primary-200: #b9d1ff;
+  --pay-primary-300: #8fb4ff;
+  --pay-primary-400: #5f8ffb;
+  --pay-primary-500: #2f6bff;
+  --pay-primary-600: #1e57e6;
+  --pay-primary-700: #1845b8;
+  --pay-primary-800: #14398f;
+  --pay-primary-900: #102c6b;
+
+  /* Neutral scale */
+  --pay-neutral-0: #ffffff;
+  --pay-neutral-25: #fbfcfe;
+  --pay-neutral-50: #f6f7fb;
+  --pay-neutral-100: #f2f3f7;
+  --pay-neutral-200: #e8eaf0;
+  --pay-neutral-300: #d9dce4;
+  --pay-neutral-400: #b3b8c4;
+  --pay-neutral-500: #8a8f9b;
+  --pay-neutral-600: #6b7280;
+  --pay-neutral-700: #4b5563;
+  --pay-neutral-800: #2c313a;
+  --pay-neutral-900: #16181d;
+
+  /* Semantic aliases (required by head contract) */
+  --pay-background: #f6f7fb;
+  --pay-foreground: #16181d;
+  --pay-card: #ffffff;
+  --pay-card-foreground: #16181d;
+  --pay-popover: #ffffff;
+  --pay-popover-foreground: #16181d;
+  --pay-primary: #2f6bff;
+  --pay-primary-foreground: #ffffff;
+  --pay-muted: #f2f3f7;
+  --pay-muted-foreground: #8a8f9b;
+  --pay-border: #edeff3;
+  --pay-input: #edeff3;
+  --pay-ring: #2f6bff;
+
+  /* Radius scale */
+  --pay-radius-small: 4px;
+  --pay-radius-medium: 8px;
+  --pay-radius-large: 12px;
+  --pay-radius-pill: 999px;
+
+  /* Static surface depth: border/surface led, shadow alpha <= 0.05 */
+  --pay-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --pay-shadow-float: 0 8px 24px -8px rgba(15, 23, 42, 0.18);
+
+  /* Page 1 action gradient (reference-derived blue to violet) */
+  --pay-cta-gradient: linear-gradient(96deg, #4a6cf7 0%, #6a55ee 52%, #8a4be8 100%);
+
+  /* Page 2 result screen blue gradient (single-hue blue) */
+  --pay-result-top: #0f63ef;
+  --pay-result-mid: #4c97f6;
+  --pay-result-soft: #cfe5ff;
+  --pay-result-bottom: #eef6ff;
+  --pay-result-glow: radial-gradient(120% 60% at 50% 0%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 60%);
+
+  /* Price / discount emphasis, used only on bill detail */
+  --pay-discount: #e05567;
+  --pay-link: #2f6bff;
+
+  /* Page 1 reference details */
+  --pay-icon-tile-bg: #fbf3dc;
+  --pay-icon-gold: #c29b2e;
+  --pay-chip-bg: #f2f3f7;
+  --pay-chip-text: #5a5f68;
+
+  /* Page 2 result screen details */
+  --pay-result-gradient: linear-gradient(180deg, #0f63ef 0%, #2c7bf4 34%, #7fb6fa 58%, #d8ebff 78%, #f6faff 100%);
+  --pay-result-border: #bbd7ff;
+  --pay-result-button-bg: #ffffff;
+  --pay-result-button-text: #2f6bff;
+  --pay-on-primary-soft: rgba(255, 255, 255, 0.9);
+  --pay-on-primary-muted: rgba(255, 255, 255, 0.72);
+  --pay-result-line: rgba(255, 255, 255, 0.2);
+
+  /* Page 3 bill detail details */
+  --pay-bill-bg: #f2f4f8;
+  --pay-surface-alt: #fbfcfe;
+  --pay-chip-blue-bg: #e8f4ff;
+  --pay-chip-blue-text: #2f6bff;
+  --pay-recommend-bg: #f6f7fa;
+  --pay-white: #ffffff;
+
+  /* Type system */
+  --pay-font-sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --pay-font-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  --pay-text-display: 56px;
+  --pay-text-h1: 26px;
+  --pay-text-h2: 22px;
+  --pay-text-h3: 17px;
+  --pay-text-body: 15px;
+  --pay-text-caption: 13px;
+}
+
+html {
+  background: var(--pay-background);
+  color: var(--pay-foreground);
+  font-family: var(--pay-font-sans);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--pay-font-sans);
+  font-size: var(--pay-text-body);
+  line-height: 1.5;
+  color: var(--pay-foreground);
+  background: var(--pay-background);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.pay-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--pay-background);
+    --color-foreground: var(--pay-foreground);
+    --color-card: var(--pay-card);
+    --color-card-foreground: var(--pay-card-foreground);
+    --color-popover: var(--pay-popover);
+    --color-popover-foreground: var(--pay-popover-foreground);
+    --color-primary: var(--pay-primary);
+    --color-primary-foreground: var(--pay-primary-foreground);
+    --color-muted: var(--pay-muted);
+    --color-muted-foreground: var(--pay-muted-foreground);
+    --color-border: var(--pay-border);
+    --color-input: var(--pay-input);
+    --color-ring: var(--pay-ring);
+    --radius-sm: var(--pay-radius-small);
+    --radius-md: var(--pay-radius-medium);
+    --radius-lg: var(--pay-radius-large);
+  }
+  @layer base {
+    body { background: var(--pay-background); color: var(--pay-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--pay-background); }
+      .text-background { color: var(--pay-background); }
+      .border-background { border-color: var(--pay-background); }
+      .ring-background { --tw-ring-color: var(--pay-background); }
+      .bg-foreground { background-color: var(--pay-foreground); }
+      .text-foreground { color: var(--pay-foreground); }
+      .border-foreground { border-color: var(--pay-foreground); }
+      .ring-foreground { --tw-ring-color: var(--pay-foreground); }
+      .bg-card { background-color: var(--pay-card); }
+      .text-card { color: var(--pay-card); }
+      .border-card { border-color: var(--pay-card); }
+      .ring-card { --tw-ring-color: var(--pay-card); }
+      .bg-card-foreground { background-color: var(--pay-card-foreground); }
+      .text-card-foreground { color: var(--pay-card-foreground); }
+      .border-card-foreground { border-color: var(--pay-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--pay-card-foreground); }
+      .bg-popover { background-color: var(--pay-popover); }
+      .text-popover { color: var(--pay-popover); }
+      .border-popover { border-color: var(--pay-popover); }
+      .ring-popover { --tw-ring-color: var(--pay-popover); }
+      .bg-popover-foreground { background-color: var(--pay-popover-foreground); }
+      .text-popover-foreground { color: var(--pay-popover-foreground); }
+      .border-popover-foreground { border-color: var(--pay-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--pay-popover-foreground); }
+      .bg-primary { background-color: var(--pay-primary); }
+      .text-primary { color: var(--pay-primary); }
+      .border-primary { border-color: var(--pay-primary); }
+      .ring-primary { --tw-ring-color: var(--pay-primary); }
+      .bg-primary-foreground { background-color: var(--pay-primary-foreground); }
+      .text-primary-foreground { color: var(--pay-primary-foreground); }
+      .border-primary-foreground { border-color: var(--pay-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--pay-primary-foreground); }
+      .bg-muted { background-color: var(--pay-muted); }
+      .text-muted { color: var(--pay-muted); }
+      .border-muted { border-color: var(--pay-muted); }
+      .ring-muted { --tw-ring-color: var(--pay-muted); }
+      .bg-muted-foreground { background-color: var(--pay-muted-foreground); }
+      .text-muted-foreground { color: var(--pay-muted-foreground); }
+      .border-muted-foreground { border-color: var(--pay-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--pay-muted-foreground); }
+      .bg-border { background-color: var(--pay-border); }
+      .text-border { color: var(--pay-border); }
+      .border-border { border-color: var(--pay-border); }
+      .ring-border { --tw-ring-color: var(--pay-border); }
+      .bg-input { background-color: var(--pay-input); }
+      .text-input { color: var(--pay-input); }
+      .border-input { border-color: var(--pay-input); }
+      .ring-input { --tw-ring-color: var(--pay-input); }
+      .bg-ring { background-color: var(--pay-ring); }
+      .text-ring { color: var(--pay-ring); }
+      .border-ring { border-color: var(--pay-ring); }
+      .ring-ring { --tw-ring-color: var(--pay-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+      <style id="critical-layout">
+        .pay-page {
+          box-sizing: border-box;
+          width: 100%;
+          max-width: 480px;
+          min-height: 100vh;
+          margin: 0 auto;
+          padding: 48px 0 32px;
+          background: var(--pay-white);
+          color: var(--pay-foreground);
+          font-family: var(--pay-font-sans);
+        }
+        .pay-header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 0 20px;
+          text-align: center;
+        }
+        .pay-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          margin-bottom: 18px;
+          border-radius: var(--pay-radius-medium);
+          background: var(--pay-icon-tile-bg);
+          color: var(--pay-icon-gold);
+        }
+        .pay-icon svg {
+          width: 26px;
+          height: 26px;
+          stroke-width: 1.5;
+        }
+        .pay-title {
+          font-size: 26px;
+          font-weight: 700;
+          line-height: 1.2;
+          letter-spacing: -0.01em;
+          color: var(--pay-foreground);
+          text-wrap: balance;
+        }
+        .pay-subtitle {
+          margin-top: 8px;
+          font-size: 15px;
+          line-height: 1.4;
+          color: var(--pay-neutral-500);
+        }
+        .pay-form {
+          margin-top: 44px;
+        }
+        .pay-row {
+          display: grid;
+          grid-template-columns: 94px minmax(0, 1fr) auto;
+          align-items: center;
+          column-gap: 12px;
+          box-sizing: border-box;
+          min-height: 58px;
+          padding: 0 20px;
+          border-bottom: 1px solid var(--pay-border);
+        }
+        .pay-row:focus-within {
+          box-shadow: inset 0 -2px 0 var(--pay-ring);
+        }
+        .pay-label {
+          font-size: 15px;
+          line-height: 1.4;
+          color: var(--pay-neutral-800);
+        }
+        .pay-order-input {
+          grid-column: 2;
+          width: 100%;
+          min-width: 0;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: var(--pay-foreground);
+          font-family: inherit;
+          font-size: 15px;
+          line-height: 1.4;
+          text-align: right;
+          font-variant-numeric: tabular-nums;
+          font-feature-settings: "tnum" 1;
+          outline: none;
+        }
+        .pay-order-input::placeholder {
+          color: var(--pay-neutral-400);
+        }
+        .pay-row--order {
+          grid-template-columns: 72px minmax(0, 1fr) auto;
+        }
+        .pay-input {
+          grid-column: 2 / -1;
+          width: 100%;
+          min-width: 0;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: var(--pay-foreground);
+          font-family: inherit;
+          font-size: 15px;
+          line-height: 1.4;
+          text-align: right;
+          outline: none;
+        }
+        .pay-input::placeholder {
+          color: var(--pay-neutral-400);
+        }
+        .pay-amount {
+          grid-column: 2;
+          display: flex;
+          align-items: baseline;
+          justify-content: flex-end;
+          gap: 4px;
+          min-width: 0;
+        }
+        .pay-currency {
+          font-size: 17px;
+          font-weight: 600;
+          line-height: 1.2;
+          color: var(--pay-foreground);
+        }
+        .pay-amount-input {
+          grid-column: auto;
+          flex: 1 1 auto;
+          width: auto;
+          font-size: 17px;
+          font-weight: 600;
+          line-height: 1.2;
+          font-variant-numeric: tabular-nums;
+          font-feature-settings: "tnum" 1;
+        }
+        .pay-select {
+          grid-column: 2;
+          width: 100%;
+          min-width: 0;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: var(--pay-foreground);
+          font-family: inherit;
+          font-size: 15px;
+          line-height: 1.4;
+          text-align: right;
+          text-align-last: right;
+          appearance: none;
+          -webkit-appearance: none;
+          outline: none;
+          cursor: pointer;
+        }
+        .pay-chevron {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--pay-neutral-500);
+          pointer-events: none;
+        }
+        .pay-chevron svg {
+          width: 18px;
+          height: 18px;
+          stroke-width: 1.6;
+        }
+        .pay-row--avatar {
+          align-items: start;
+        }
+        .pay-label--top {
+          padding-top: 18px;
+        }
+        .pay-avatar-block {
+          grid-column: 2 / -1;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 8px;
+          min-width: 0;
+          padding: 16px 0;
+          text-align: right;
+        }
+        .pay-upload {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 88px;
+          height: 88px;
+          padding: 0;
+          border: 1px dashed var(--pay-border);
+          border-radius: 10px;
+          background: var(--pay-surface-alt);
+          color: var(--pay-neutral-500);
+          overflow: hidden;
+          transition: background-color 140ms cubic-bezier(.2,.8,.2,1), border-color 140ms cubic-bezier(.2,.8,.2,1);
+        }
+        .pay-upload:hover {
+          background: var(--pay-muted);
+          border-color: var(--pay-neutral-300);
+        }
+        .pay-upload:focus-visible {
+          outline: 2px solid var(--pay-ring);
+          outline-offset: 2px;
+        }
+        .pay-upload-inner {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          font-size: 12px;
+          line-height: 1.2;
+          color: var(--pay-neutral-500);
+        }
+        .pay-upload-inner svg {
+          width: 24px;
+          height: 24px;
+          color: var(--pay-neutral-400);
+          stroke-width: 1.5;
+        }
+        .pay-upload-inner[hidden],
+        .pay-avatar-preview[hidden],
+        .pay-upload-file[hidden],
+        .pay-upload-error[hidden] {
+          display: none;
+        }
+        .pay-avatar-preview {
+          display: block;
+          width: 88px;
+          height: 88px;
+          border-radius: 10px;
+          object-fit: cover;
+        }
+        .pay-upload-hint {
+          margin: 0;
+          font-size: 12px;
+          line-height: 1.4;
+          color: var(--pay-neutral-400);
+        }
+        .pay-upload-file {
+          margin: 0;
+          max-width: 240px;
+          font-size: 12px;
+          line-height: 1.4;
+          color: var(--pay-neutral-500);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .pay-upload-error {
+          margin: 0;
+          font-size: 12px;
+          line-height: 1.4;
+          color: var(--pay-discount);
+        }
+        .pay-cta {
+          display: block;
+          box-sizing: border-box;
+          width: calc(100% - 40px);
+          height: 52px;
+          margin: 36px 20px 0;
+          padding: 0;
+          border: 0;
+          border-radius: var(--pay-radius-large);
+          background-color: var(--pay-primary);
+          background-image: var(--pay-cta-gradient);
+          color: var(--pay-primary-foreground);
+          font-family: inherit;
+          font-size: 17px;
+          font-weight: 600;
+          line-height: 1;
+          transition: transform 140ms cubic-bezier(.2,.8,.2,1), filter 140ms cubic-bezier(.2,.8,.2,1);
+        }
+        .pay-cta:hover {
+          filter: brightness(1.05);
+          transform: translateY(-1px);
+        }
+        .pay-cta:active {
+          filter: brightness(0.98);
+          transform: translateY(0);
+        }
+        .pay-cta:focus-visible {
+          outline: 2px solid var(--pay-ring);
+          outline-offset: 2px;
+        }
+        @media (max-width: 360px) {
+          .pay-header { padding: 0 16px; }
+          .pay-row { grid-template-columns: 78px minmax(0, 1fr) auto; padding: 0 16px; column-gap: 10px; }
+          .pay-order-input { font-size: 14px; letter-spacing: 0; }
+          .pay-cta { width: calc(100% - 32px); margin-left: 16px; margin-right: 16px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .pay-cta, .pay-upload {
+            transition-duration: 0.01ms;
+          }
+        }
+      </style>
+
+      <div class="pay-page">
+        <header class="pay-header">
+          <div class="pay-icon" aria-hidden="true">
+            <i data-lucide="receipt-text"></i>
+          </div>
+          <h1 class="pay-title">收款信息</h1>
+          <p class="pay-subtitle">请填写以下收款信息</p>
+        </header>
+
+        <form class="pay-form" id="payForm" novalidate>
+          <div class="pay-row pay-row--order">
+            <span class="pay-label">订单号</span>
+            <input class="pay-order-input" id="payOrderNo" name="payOrderNo" type="text" inputmode="text" placeholder="请输入订单号" value="2610301335229314813" autocomplete="off">
+            
+          </div>
+
+          <label class="pay-row" for="payName">
+            <span class="pay-label">收款姓名</span>
+            <input class="pay-input" id="payName" name="payName" type="text" placeholder="请输入收款姓名" value="陈*如" autocomplete="off" required>
+          </label>
+
+          <label class="pay-row" for="payNickname">
+            <span class="pay-label">收款昵称</span>
+            <input class="pay-input" id="payNickname" name="payNickname" type="text" placeholder="请输入收款昵称" value="5锅" autocomplete="off">
+          </label>
+
+          <label class="pay-row" for="payAccount">
+            <span class="pay-label">收款账号</span>
+            <input class="pay-input" id="payAccount" name="payAccount" type="text" inputmode="text" placeholder="请输入收款账号" value="3836227326@qq.com" autocomplete="off">
+          </label>
+
+          <label class="pay-row" for="payAmount">
+            <span class="pay-label">应付金额</span>
+            <span class="pay-amount">
+              <span class="pay-currency" aria-hidden="true">¥</span>
+              <input class="pay-input pay-amount-input" id="payAmount" name="payAmount" type="text" inputmode="decimal" placeholder="0.00" value="5000.00" autocomplete="off">
+            </span>
+            
+          </label>
+
+          <label class="pay-row" for="payMethod">
+            <span class="pay-label">付款方式</span>
+            <input class="pay-input" id="payMethod" name="payMethod" type="text" placeholder="请输入付款方式" value="支付宝" autocomplete="off">
+          </label>
+
+          <div class="pay-row pay-row--avatar">
+            <span class="pay-label pay-label--top">收款头像</span>
+            <div class="pay-avatar-block">
+              <button type="button" class="pay-upload" id="payUploadBtn" aria-label="上传收款头像">
+                <span class="pay-upload-inner" id="payUploadEmpty">
+                  <i data-lucide="image-plus" aria-hidden="true"></i>
+                  <span>上传头像</span>
+                </span>
+                <img class="pay-avatar-preview" id="payAvatarPreview" alt="收款头像预览" hidden>
+              </button>
+              <p class="pay-upload-hint">360 × 360 像素，支持 JPEG / PNG</p>
+              <p class="pay-upload-file" id="payUploadFile" hidden></p>
+              <p class="pay-upload-error" id="payUploadError" role="alert" hidden>请上传 360 × 360 像素的图片</p>
+              <input class="pay-file-input" id="payAvatarInput" type="file" accept="image/jpeg,image/png" hidden>
+            </div>
+          </div>
+        </form>
+
+        <button type="button" class="pay-cta" data-dom-id="next-transfer">下一步</button>
+      </div>
+
+      <script>
+        (function () {
+          var form = document.getElementById('payForm');
+          form.addEventListener('submit', function (event) {
+            event.preventDefault();
+          });
+
+          var receiptFields = {
+            name: document.getElementById('payName'),
+            nickname: document.getElementById('payNickname'),
+            account: document.getElementById('payAccount'),
+            amount: document.getElementById('payAmount'),
+            method: document.getElementById('payMethod')
+          };
+          var nextButton = document.querySelector('[data-dom-id="next-transfer"]');
+
+          function saveReceiptData() {
+            var payload = {
+              name: receiptFields.name.value.trim(),
+              nickname: receiptFields.nickname.value.trim(),
+              account: receiptFields.account.value.trim(),
+              amount: receiptFields.amount.value.trim(),
+              method: receiptFields.method.value.trim()
+            };
+            try {
+              localStorage.setItem('payReceiptData', JSON.stringify(payload));
+            } catch (err) {
+              return;
+            }
+          }
+
+          Object.keys(receiptFields).forEach(function (key) {
+            receiptFields[key].addEventListener('input', saveReceiptData);
+            receiptFields[key].addEventListener('change', saveReceiptData);
+          });
+
+          if (nextButton) nextButton.addEventListener('click', function () {
+            saveReceiptData();
+            window.location.href = 'transfer-success.html';
+          });
+
+          var uploadBtn = document.getElementById('payUploadBtn');
+          var fileInput = document.getElementById('payAvatarInput');
+          var preview = document.getElementById('payAvatarPreview');
+          var emptyState = document.getElementById('payUploadEmpty');
+          var fileLabel = document.getElementById('payUploadFile');
+          var errorText = document.getElementById('payUploadError');
+          var objectUrl = null;
+
+          function clearPreview() {
+            if (objectUrl) {
+              URL.revokeObjectURL(objectUrl);
+              objectUrl = null;
+            }
+            preview.removeAttribute('src');
+            preview.hidden = true;
+            emptyState.hidden = false;
+            fileLabel.hidden = true;
+            fileLabel.textContent = '';
+          }
+
+          function showError() {
+            clearPreview();
+            errorText.hidden = false;
+            fileInput.value = '';
+          }
+
+          uploadBtn.addEventListener('click', function () {
+            fileInput.click();
+          });
+
+          fileInput.addEventListener('change', function () {
+            var file = fileInput.files && fileInput.files[0];
+            if (!file) return;
+            var typeOk = file.type === 'image/jpeg' || file.type === 'image/png';
+            if (!typeOk) {
+              showError();
+              return;
+            }
+            var reader = new FileReader();
+            reader.onload = function () {
+              var dataUrl = reader.result;
+              var probe = new Image();
+              probe.onload = function () {
+                if (probe.naturalWidth === 360 && probe.naturalHeight === 360) {
+                  preview.src = dataUrl;
+                  preview.hidden = false;
+                  emptyState.hidden = true;
+                  fileLabel.textContent = file.name;
+                  fileLabel.hidden = false;
+                  errorText.hidden = true;
+                  fileInput.value = '';
+                  try {
+                    localStorage.setItem('payReceiptAvatar', dataUrl);
+                  } catch (err) {}
+                } else {
+                  showError();
+                }
+              };
+              probe.onerror = function () {
+                showError();
+              };
+              probe.src = dataUrl;
+            };
+            reader.onerror = function () {
+              showError();
+            };
+            reader.readAsDataURL(file);
+          });
+
+          (function restoreAvatar() {
+            var saved = null;
+            try {
+              saved = localStorage.getItem('payReceiptAvatar');
+            } catch (err) {}
+            if (saved) {
+              preview.src = saved;
+              preview.hidden = false;
+              emptyState.hidden = true;
+            }
+          })();
+        })();
+      </script>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
