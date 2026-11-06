@@ -607,10 +607,10 @@ a {
                 </span>
                 <img class="pay-avatar-preview" id="payAvatarPreview" alt="收款头像预览" hidden>
               </button>
-              <p class="pay-upload-hint">360 × 360 像素，支持 JPEG / PNG</p>
+              <p class="pay-upload-hint">360 × 360 像素，支持 JPG / JPEG / PNG</p>
               <p class="pay-upload-file" id="payUploadFile" hidden></p>
               <p class="pay-upload-error" id="payUploadError" role="alert" hidden>请上传 360 × 360 像素的图片</p>
-              <input class="pay-file-input" id="payAvatarInput" type="file" accept="image/jpeg,image/png" hidden>
+              <input class="pay-file-input" id="payAvatarInput" type="file" accept="image/jpeg,image/jpg,image/png,.jpg,.jpeg,.png" hidden>
             </div>
           </div>
         </form>
@@ -692,7 +692,7 @@ a {
           fileInput.addEventListener('change', function () {
             var file = fileInput.files && fileInput.files[0];
             if (!file) return;
-            var typeOk = file.type === 'image/jpeg' || file.type === 'image/png';
+            var typeOk = ['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) !== -1 || /\.(jpe?g|png)$/i.test(file.name);
             if (!typeOk) {
               showError();
               return;
