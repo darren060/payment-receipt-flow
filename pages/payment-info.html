@@ -607,9 +607,9 @@ a {
                 </span>
                 <img class="pay-avatar-preview" id="payAvatarPreview" alt="收款头像预览" hidden>
               </button>
-              <p class="pay-upload-hint">360 × 360 像素，支持 JPG / JPEG / PNG</p>
+              <p class="pay-upload-hint">尺寸不限，支持 JPG / JPEG / PNG</p>
               <p class="pay-upload-file" id="payUploadFile" hidden></p>
-              <p class="pay-upload-error" id="payUploadError" role="alert" hidden>请上传 360 × 360 像素的图片</p>
+              <p class="pay-upload-error" id="payUploadError" role="alert" hidden>请上传 JPG / JPEG / PNG 格式的图片</p>
               <input class="pay-file-input" id="payAvatarInput" type="file" accept="image/jpeg,image/jpg,image/png,.jpg,.jpeg,.png" hidden>
             </div>
           </div>
@@ -702,20 +702,33 @@ a {
               var dataUrl = reader.result;
               var probe = new Image();
               probe.onload = function () {
-                if (probe.naturalWidth === 360 && probe.naturalHeight === 360) {
-                  preview.src = dataUrl;
-                  preview.hidden = false;
-                  emptyState.hidden = true;
-                  fileLabel.textContent = file.name;
-                  fileLabel.hidden = false;
-                  errorText.hidden = true;
-                  fileInput.value = '';
-                  try {
-                    localStorage.setItem('payReceiptAvatar', dataUrl);
-                  } catch (err) {}
-                } else {
-                  showError();
+                var maxSide = 800;
+                var w = probe.naturalWidth || probe.width;
+                var h = probe.naturalHeight || probe.height;
+                var scale = Math.min(1, maxSide / Math.max(w, h));
+                var cw = Math.max(1, Math.round(w * scale));
+                var ch = Math.max(1, Math.round(h * scale));
+                var canvas = document.createElement('canvas');
+                canvas.width = cw;
+                canvas.height = ch;
+                var ctx = canvas.getContext('2d');
+                var isPng = file.type === 'image/png';
+                if (!isPng) {
+                  ctx.fillStyle = '#ffffff';
+                  ctx.fillRect(0, 0, cw, ch);
                 }
+                ctx.drawImage(probe, 0, 0, cw, ch);
+                var storedUrl = canvas.toDataURL(isPng ? 'image/png' : 'image/jpeg', 0.82);
+                preview.src = storedUrl;
+                preview.hidden = false;
+                emptyState.hidden = true;
+                fileLabel.textContent = file.name;
+                fileLabel.hidden = false;
+                errorText.hidden = true;
+                fileInput.value = '';
+                try {
+                  localStorage.setItem('payReceiptAvatar', storedUrl);
+                } catch (err) {}
               };
               probe.onerror = function () {
                 showError();
